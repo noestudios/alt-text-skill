@@ -1,0 +1,15 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store
+
+# Scratch / working files (manifests + rasterized PDF pages are intermediates)
+scratch/
+*.tmp
+
+# Keep committed examples, but ignore ad-hoc docx elsewhere
+/*.docx
