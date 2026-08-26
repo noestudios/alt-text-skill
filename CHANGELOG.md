@@ -4,6 +4,15 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/), and this project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [0.2.2] — 2026-08-26
+
+### Fixed
+- **README install instructions**: replaced the `<you>` placeholder in the clone URL with the real repo
+  owner (`noestudios`); added `mkdir -p ~/.claude/skills` so `cp` lands the skill at
+  `.../skills/alt-text/` on a fresh machine instead of misplacing it; and documented that installing via
+  the Claude desktop app (selecting `SKILL.md`) copies **only that file** — the `scripts/` folder must
+  accompany it or the skill fails when it shells out to build the `.docx`.
+
 ## [0.2.1] — 2026-08-26
 
 ### Changed
