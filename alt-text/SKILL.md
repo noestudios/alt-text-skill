@@ -16,12 +16,28 @@ InDesign (or similar). The Markdown manifest is an internal working file only �
 Bundled helpers live in `scripts/` (see `scripts/README.md`): `manifest_to_docx.py` builds the
 `.docx`; `pdf_to_pngs.sh` rasterizes PDF pages so they can be viewed and described.
 
+## Required inputs — confirm before doing anything
+
+Do not start until you have these. If any **required** one wasn't provided when the skill was
+invoked, ask the user for them in ONE brief, plain message (all at once — do not interrogate one at a
+time), then proceed. Never guess a directory or invent a report name.
+
+- **`images_dir`** *(required)* — the folder of images to describe, or a parent folder whose
+  subfolders are separate projects. No directory means there is nothing to do: ask for the path.
+- **`report_label`** *(required)* — the report/publication name; it becomes the `.docx` subtitle
+  (e.g., "Acme 2025 Annual Report").
+- **`document`** *(optional)* — a source document to ground the descriptions in.
+
+Example plain ask when invoked bare: *"To generate alt text I need two things: (1) the folder of
+images (or a parent folder of project subfolders), and (2) the report name to put on the documents.
+Optionally, point me at a source document for context. What are they?"*
+
 ## Step 1: Resolve context (required before generating anything)
 
 Never generate alt text without at least a document purpose. Resolve:
 
-1. **Report label** (`$report_label`): the report/publication name, used as the `.docx` subtitle
-   (e.g., "Acme 2025 Sustainability Report"). If not supplied as an argument, ask once.
+1. **Report label** (`$report_label`): confirmed above (Required inputs); it becomes the `.docx`
+   subtitle.
 2. **Document** (`$document` non-empty): read it. Map each image to where it appears; the surrounding
    prose is the primary context — it determines whether an image is redundant, decorative, or carrying
    information the text doesn't.
