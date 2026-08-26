@@ -1,34 +1,34 @@
 # alt-text skill
 
-A [Claude](https://claude.com/claude-code) skill that generates **accessible, WCAG-aligned alt text**
-for a folder of images and hands it back as a clean **`.docx` per folder** — ready to copy-paste into
-InDesign or any layout tool.
+A [Claude](https://claude.com/claude-code) skill that writes the alt text for a whole folder of images
+at once. It opens each image, classifies it, and writes WCAG-aligned alt text grounded in what the
+images are actually for, then hands back a `.docx` per folder. Paste that wherever the text needs to
+live: website markup, a CMS, an app's strings, an accessibility audit, or a designer's layout.
 
-Built for real publication workflows (annual reports, brochures, catalogs) where a designer needs
-caption-ready alt text next to each image, plus long descriptions for complex figures like charts and
-architectural drawings.
+Any batch of images that needs describing is fair game. It also handles the awkward cases a lot of tools
+skip — charts, diagrams, and architectural drawings get a short alt plus a full long description, and
+multi-page PDFs are rasterized so their pages can be described too. Publication workflows (annual
+reports, brochures, catalogs) were the original use case, but they're just one of many.
 
 ## What it does
 
-- **Classifies every image** — decorative, simple informative, functional, complex, or text-as-image —
-  and writes alt text to the WCAG rules for each type.
-- **Handles PDF figures** (renderings, site plans, floor plans) by rasterizing each page so it can be
-  described, referencing it as `Site Plan.pdf — p2`.
-- **Treats architectural drawings as complex** — short alt + a long description — and differentiates
-  similar sets (four elevations, four perspectives) instead of repeating one description.
-- **Grounds descriptions in context** — a source document, a `context.md`, or a client's
-  "photo descriptions" `.docx`/`.txt`.
-- **Omits personal characteristics by default** — people are described by role and action, never by
-  apparent race, gender, or age (configurable).
-- **Outputs one standard-format `.docx` per folder**, named with the folder prepended
-  (`Riverside Library alt-text-manifest.docx`) so files stay unique when collected.
-- **Optional thumbnails** — lay out each entry as *thumbnail | description* (`--thumbs`), with
-  downscaled, EXIF-rotated previews (also works for rasterized PDF pages).
-- **Master index by default** — one spreadsheet accounting for every image across every folder
-  (Folder / # / File / Category / Alt chars / Alt text / Long description / Notes). Produced as `.csv`
-  on every run; pass `--xlsx` for an Excel file or `--no-index` to skip it.
-- **Quiet by default** — the run ends with one short completion note: output location, images written,
-  any errors, total time. Image-specific caveats live in each entry's Note field, not in chat.
+- Sorts each image into one of five WCAG categories — decorative, simple informative, functional,
+  complex, or text-as-image — and writes to the rule for that type. Decorative images get `alt=""`,
+  text-in-image gets transcribed, and charts or diagrams get a short alt plus a long description.
+- Reads the surrounding context first: a source document, a `context.md`, or the "photo descriptions"
+  file a client hands over. The alt text then says what an image is *for*, not just what's in it.
+- Doesn't guess at people. By default it describes them by role and action ("a worker installs
+  ductwork"), never by apparent race, gender, or age. Flip that off if a project needs it.
+- Handles the cases a lot of tools skip. Multi-page PDFs get rasterized page by page (`Site Plan.pdf —
+  p2`) so each page can be described; a set of four elevations gets four distinct write-ups, not one
+  pasted four times.
+- Writes one `.docx` per folder, named after the folder (`Riverside Library alt-text-manifest.docx`) so
+  nothing collides when you collect them. Add `--thumbs` and each entry gets a thumbnail next to it.
+- Builds a master spreadsheet across every folder by default — one row per image (Folder, #, File,
+  Category, Alt chars, Alt text, Long description, Notes). It's a `.csv` unless you ask for `--xlsx`, or
+  `--no-index` to skip it.
+- Stays quiet while it runs. At the end you get a short note — where the files landed, how many images,
+  any errors, how long it took — and the per-image detail lives in the deliverable, not the chat.
 
 ## Install (drop-in skill)
 
