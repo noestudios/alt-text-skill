@@ -1,7 +1,7 @@
 ---
 name: alt-text
-description: Generate accessible alt text for a directory of images (or a parent folder of project subfolders), for inclusion in a document. Classifies each image (decorative, informative, functional, complex, text-as-image), applies WCAG-aligned writing rules, rasterizes PDF/rendering figures so they can be described, and outputs a standard-format .docx per folder for layout hand-off — optionally with a thumbnail beside each entry and a master index spreadsheet across all folders. Use when the user asks for alt text, image descriptions, or accessibility text for images.
-argument-hint: [images-dir] [report-label] [document-path]
+description: Generate accessible alt text for a directory of images (or a parent folder of project subfolders), for inclusion in a document. Classifies each image (decorative, informative, functional, complex, text-as-image), applies WCAG-aligned writing rules, rasterizes PDF/rendering figures so they can be described, and outputs a standard-format .docx per folder for layout hand-off — plus a master index spreadsheet across all folders by default, and optional thumbnails beside each entry. Use when the user asks for alt text, image descriptions, or accessibility text for images.
+argument-hint: [images-dir] [report-label] [document-path] [--thumbs] [--xlsx] [--no-index]
 arguments: [images_dir, report_label, document]
 disable-model-invocation: true
 allowed-tools: Read Glob Grep Bash Write
@@ -31,6 +31,22 @@ time), then proceed. Never guess a directory or invent a report name.
 Example plain ask when invoked bare: *"To generate alt text I need two things: (1) the folder of
 images (or a parent folder of project subfolders), and (2) the report name to put on the documents.
 Optionally, point me at a source document for context. What are they?"*
+
+## Command options (flags)
+
+Beyond the positional inputs, the invocation may carry flags — anywhere in the command, e.g.
+`/alt-text "<images>" "<report label>" --thumbs --xlsx`. Recognize them from the argument string, and
+honor the equivalent plain-language request the same way ("include thumbnails", "make the index xlsx",
+"skip the index"). A `--flag` token is **never** a positional value: strip flags out first, then the
+remaining positionals are images-dir, report-label, document (so `--thumbs` is never mistaken for the
+document path).
+
+- `--thumbs` — embed a thumbnail beside each entry in every `.docx` (needs Pillow). Default: off (text-only).
+- `--xlsx` — build the master index as `.xlsx` instead of the default `.csv` (needs openpyxl).
+- `--no-index` — skip the master index for this run.
+
+**The master index is ON by default.** Unless `--no-index` is given, every run finishes by producing one
+overall index across all folders (Step 6) — `.csv` by default, `.xlsx` with `--xlsx`.
 
 ## Step 1: Resolve context (required before generating anything)
 
@@ -102,7 +118,8 @@ Process images individually. Do not batch multiple images into one Read — qual
 
 Write results incrementally to a Markdown manifest **in a scratch/temp directory, not the image
 folder** — this is crash-safety for a long run, and it feeds the `.docx` generator. The image folder
-receives only the `.docx` (Step 6).
+receives only the `.docx` (Step 6). Name each scratch manifest `<folder> alt-text-manifest.md` and keep
+them all in one shared scratch dir, so the default master index (Step 6) finds every folder's manifest.
 
 Manifest format:
 
@@ -135,7 +152,12 @@ publication** — rotated source files, content that doesn't match its folder's 
 misfile), duplicate/near-duplicate images, mislabeled title blocks, and for generic/stock images a
 placement-dependent `alt=""`-vs-descriptive recommendation.
 
-## Step 6: Produce the `.docx` deliverable (the only output in the folder)
+Finally, **offer the finishing options** the user didn't already settle with a flag: thumbnails
+embedded beside each entry (`--thumbs`) — if they say yes, regenerate the affected `.docx` with
+thumbnails; and note that the master index was included by default, offering `--xlsx` if they'd rather
+have a spreadsheet than the CSV (or `--no-index` if they don't want it at all).
+
+## Step 6: Produce the `.docx` deliverable (the only per-folder output in the folder)
 
 Convert each folder's scratch manifest into its `.docx`, written into the image folder, named with the
 **enclosing folder name prepended** so files stay unique when collected:
@@ -155,10 +177,11 @@ a `.md` in the deliverable folder. Verify a sample by rendering it (LibreOffice:
 `soffice --headless --convert-to pdf "<file.docx>"`, or macOS `qlmanage -t -s 1500 -o <dir>
 "<file.docx>"`) and reading the result.
 
-### Optional: thumbnails beside each entry
+### Thumbnails beside each entry (`--thumbs`)
 
-If the user wants a visual reference, add `--thumbs` so each entry is laid out as *thumbnail |
-description*. Point the generator at the images (and, for PDF-page rows, the rasterized pages):
+When `--thumbs` is set (or the user asks for a visual reference), build each `.docx` with a thumbnail so
+every entry is laid out as *thumbnail | description*. Point the generator at the images (and, for
+PDF-page rows, the rasterized pages):
 
 ```bash
 python scripts/manifest_to_docx.py "<scratch manifest.md>" \
@@ -170,17 +193,20 @@ python scripts/manifest_to_docx.py "<scratch manifest.md>" \
 Thumbnails are downscaled and EXIF-rotated (needs Pillow: `.venv/bin/pip install Pillow`). Rows whose
 image can't be found are reported and fall back to text-only.
 
-### Optional: master index spreadsheet (all folders)
+### Master index across all folders (default)
 
-If the user wants a single accounting of every image, run the index over the directory holding all the
-(scratch) manifests — one row per image, columns Folder / # / File / Category / Alt chars / Alt text /
-Long description / Notes:
+Unless `--no-index` was given, **always finish by building one overall index** from the shared scratch
+dir holding the manifests — one row per image, columns Folder / # / File / Category / Alt chars / Alt
+text / Long description / Notes. Write it to the top-level `$images_dir` as `alt-text-index.csv` (the
+default), or `.xlsx` when `--xlsx` is set:
 
 ```bash
-python scripts/manifest_to_index.py "<dir of manifests>" --out "<dest>/alt-text-index.xlsx"
+python scripts/manifest_to_index.py "<scratch dir of manifests>" \
+    --out "<images_dir>/alt-text-index.csv"        # or alt-text-index.xlsx with --xlsx
 ```
 
-`.xlsx` (frozen header + autofilter) needs `openpyxl`; a `.csv` extension needs nothing.
+`.csv` needs nothing; `.xlsx` (frozen header + autofilter) needs `openpyxl`. If `--xlsx` is requested
+but openpyxl isn't installed, the script auto-writes `.csv` instead and says so.
 
 ## Out of scope
 

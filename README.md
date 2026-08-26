@@ -24,8 +24,9 @@ architectural drawings.
   (`Riverside Library alt-text-manifest.docx`) so files stay unique when collected.
 - **Optional thumbnails** — lay out each entry as *thumbnail | description* (`--thumbs`), with
   downscaled, EXIF-rotated previews (also works for rasterized PDF pages).
-- **Optional master index** — one spreadsheet (`.xlsx` or `.csv`) accounting for every image across
-  every folder: Folder / # / File / Category / Alt chars / Alt text / Long description / Notes.
+- **Master index by default** — one spreadsheet accounting for every image across every folder
+  (Folder / # / File / Category / Alt chars / Alt text / Long description / Notes). Produced as `.csv`
+  on every run; pass `--xlsx` for an Excel file or `--no-index` to skip it.
 - **Flags publication issues** — rotated source files, likely misfiled images, duplicates, mislabeled
   title blocks, and decorative-vs-informative calls for stock imagery.
 
@@ -55,6 +56,22 @@ Then in Claude Code:
 
 `images` can be a single folder, or a **parent folder of project subfolders** — each subfolder becomes
 its own `.docx`.
+
+### Options (flags, anywhere in the command)
+
+```
+/alt-text "/path/to/images" "Acme 2025 Annual Report" --thumbs --xlsx
+```
+
+| Flag | Effect |
+|---|---|
+| *(none)* | A `.docx` per folder **plus** an overall `alt-text-index.csv` across all folders. |
+| `--thumbs` | Embed a thumbnail beside each entry in the `.docx` (needs Pillow). |
+| `--xlsx` | Build the master index as `.xlsx` instead of the default `.csv` (needs openpyxl). |
+| `--no-index` | Skip the master index. |
+
+The master index is generated **by default** — no flag needed. You can also just ask in plain language
+("include thumbnails", "make the index a spreadsheet", "skip the index").
 
 ## Requirements
 

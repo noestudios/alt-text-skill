@@ -4,6 +4,22 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/), and this project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [0.3.0] — 2026-08-26
+
+### Added
+- **Command flags** recognized anywhere in the `/alt-text` invocation, documented in the argument hint
+  and a new "Command options" section: `--thumbs` (embed thumbnails), `--xlsx` (master index as
+  `.xlsx`), `--no-index` (skip the master index). Flags are parsed out before the positional args, so a
+  `--flag` is never mistaken for the document path.
+- The skill now **proactively offers** the finishing options (thumbnails, and an `.xlsx` upgrade for the
+  index) in its end-of-run report, instead of leaving them undiscoverable.
+
+### Changed
+- **The master index is now produced by default** — every run writes one overall `alt-text-index.csv`
+  across all folders unless `--no-index` is given (previously opt-in only).
+- Scratch manifests are named `<folder> alt-text-manifest.md` in one shared scratch dir so the default
+  index reliably finds every folder's manifest.
+
 ## [0.2.2] — 2026-08-26
 
 ### Fixed
