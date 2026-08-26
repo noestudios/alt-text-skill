@@ -154,11 +154,18 @@ People policy: <omit / describe>
 <long description for each complex image>
 ```
 
-**Notes column carries only real, image-specific information** — justification for a decorative
-classification, an uncertainty flag, a context override, the people-policy application, a rotated
-source, a duplicate, a mislabeled title block, or a decorative-vs-informative recommendation for stock
-imagery. **Never** put manifest-internal navigation ("see long description below") in the notes; the
-generator strips it, but don't write it. If an image needs no note, leave the cell empty.
+**The Notes column is the exception, not the rule — default to empty; most rows have no note.** A note
+records something **specific to that one image** that the publisher needs to know — an *observation
+about the image*, never an instruction. The deliverable goes to a designer: do **not** dictate their
+choices or restate the accessibility rules. Applying the people policy is the standing default and is
+**not** a note; and lines like "use alt='' if placed as decoration" or "describe if it illustrates a
+point" just tell the designer their own job — leave them out. Legit notes are factual flags: a one-line
+reason a decorative image carries no information ("section-divider texture"), an unconfirmed proper
+noun or title block ("reads 'Sheet A2.1', not verified"), a context-file override, a rotated source, a
+duplicate/near-duplicate of another image, or a content-vs-folder mismatch (possible misfile).
+**Never** put manifest-internal navigation ("see long description below"); the generator strips it, but
+don't write it. Anything that applies to the whole set (e.g. "this folder is generic stock imagery")
+goes **once** into the Step 5 report, not onto every row.
 
 ## Step 5: Verification pass + operational flags
 
@@ -167,8 +174,9 @@ reconstruct what matters, in this document?** Revise entries that fail.
 
 Then report to the user: total processed, count per category, and **operational issues that affect
 publication** — rotated source files, content that doesn't match its folder's theme (possible
-misfile), duplicate/near-duplicate images, mislabeled title blocks, and for generic/stock images a
-placement-dependent `alt=""`-vs-descriptive recommendation.
+misfile), duplicate/near-duplicate images, mislabeled title blocks, and a heads-up on which images are
+generic/stock (whether those need alt text or `alt=""` depends on where they land in the layout — the
+publisher's call, not the manifest's).
 
 Finally, **offer the finishing options** the user didn't already settle with a flag: thumbnails
 embedded beside each entry (`--thumbs`) — if they say yes, regenerate the affected `.docx` with

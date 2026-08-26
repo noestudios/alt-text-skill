@@ -19,6 +19,11 @@ All notable changes to this project are documented here. The format is based on
   re-opening/rendering/introspecting the `.docx` to re-verify a build. It investigates only when a
   script flags a warning (orphaned long-description, missing thumbnail). The image-quality re-view in
   Step 5 is unchanged.
+- **Notes column is now sparse and observational** — a note appears only for something specific to that
+  one image (an unconfirmed name/title block, a rotated source, a duplicate, a possible misfile, or a
+  decorative image's reason). The skill no longer restates the people policy on every row or writes
+  instructions to the designer ("use alt='' if decorative"); whole-set observations go once into the
+  end-of-run report instead.
 
 ## [0.3.0] — 2026-08-26
 
