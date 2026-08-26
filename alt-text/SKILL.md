@@ -77,9 +77,13 @@ characteristics, and never guess a name. Deviate only if the user says so or a c
 
 ## Step 2: Inventory (and folder mode)
 
-- **Folder mode:** if `$images_dir` is a *parent* whose subfolders each hold a project's images,
-  process **each subfolder as its own deliverable** (its own `.docx`). For many subfolders, fan out
-  one worker per subfolder. Loose images sitting directly in the parent form their own deliverable.
+- **One worker per folder (default).** Each folder that holds images is its own deliverable (its own
+  `.docx`): every subfolder of a parent is one, and loose images sitting directly in the parent form one
+  more. **Process each in its own subagent worker, in parallel.** The worker opens and views that
+  folder's images in its own context — so the image rendering stays out of the main conversation, and
+  the folders run concurrently rather than one image at a time (faster). This is the default even for a
+  single folder. The main thread coordinates the workers, shows per-folder progress (Step 3), and
+  afterward builds the `.docx` deliverables and the master index from the shared scratch manifests.
 - List image files (png, jpg, jpeg, gif, webp, svg) per folder. Report the count. If a single folder
   has more than 40, confirm before proceeding.
 - **PDF figures** (architectural renderings, site plans, floor plans) are in scope as report figures.
@@ -93,17 +97,18 @@ characteristics, and never guess a name. Deviate only if the user says so or a c
 
 Process images individually. Do not batch multiple images into one Read — quality drops. View, then:
 
-**Progress output — default is a simple, minimal meter, not per-image narration.** Keep viewing **one
-image per Read** (that's about quality, not chatter), but by default do **not** write a paragraph about
-each image. Emit only these terse status lines as you go:
+**Progress output — simple and minimal.** View **one image per Read** (quality, not chatter), but do
+**not** narrate each image. Because each folder runs in its own worker (Step 2), the meter splits
+cleanly:
 
-- One short line per image, counting within the current folder: `N of <total> images` (e.g.
-  `1 of 23 images`, `2 of 23 images`, …), where `<total>` is that folder's image count.
-- `Writing <folder name> manifest` when you build that folder's `.docx` (Step 6).
-- `Writing <project name> manifest` when you build the master index (the `$report_label` / top-level project).
+- **Inside each worker** (its own panel, out of the main chat): a terse counter per image —
+  `N of <total> images` (`1 of 23 images`, `2 of 23 images`, …), `<total>` being that folder's image
+  count. With **`--verbose`** the worker narrates each image (file, category, alt text) instead of the
+  bare counter.
+- **In the main thread:** `Writing <folder> manifest` as each folder's `.docx` is built, and
+  `Writing <project> manifest` when the master index is built. Nothing per image.
 
-Nothing else per image — the real detail lands once, in the Step 5 report. With **`--verbose`**, narrate
-each image as you classify it (file, category, and the alt text written) instead of the bare counter.
+The real detail lands once, in the Step 5 report.
 
 **Classify first** into exactly one category:
 
@@ -169,11 +174,11 @@ goes **once** into the Step 5 report, not onto every row.
 
 ## Step 5: Verification pass + operational flags
 
-After all images are written, re-view each against its drafted alt: **could a screen-reader user
-reconstruct what matters, in this document?** Revise entries that fail.
+Each worker re-views its own folder before returning: for every image, **could a screen-reader user
+reconstruct what matters, in this document?** Revise entries that fail, and pass back operational flags.
 
-Then report to the user: total processed, count per category, and **operational issues that affect
-publication** — rotated source files, content that doesn't match its folder's theme (possible
+The main thread then compiles one report to the user: total processed, count per category, and
+**operational issues that affect publication** — rotated source files, content that doesn't match its folder's theme (possible
 misfile), duplicate/near-duplicate images, mislabeled title blocks, and a heads-up on which images are
 generic/stock (whether those need alt text or `alt=""` depends on where they land in the layout — the
 publisher's call, not the manifest's).

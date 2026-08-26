@@ -95,7 +95,8 @@ The skill runs a fixed pipeline (full detail in [`alt-text/SKILL.md`](alt-text/S
 
 1. **Resolve context** — report label, source document / context file, people policy.
 2. **Inventory** — list images per folder; rasterize PDF figures; skip source-file duplicates.
-3. **Classify & write** — one image at a time, WCAG rules per category.
+3. **Classify & write** — each folder in its own parallel worker (images stay out of the main chat),
+   one image at a time per worker, WCAG rules per category.
 4. **Working manifest** — a scratch Markdown manifest (crash-safety; not a deliverable).
 5. **Verify & flag** — re-check each alt; surface publication issues.
 6. **Deliver** — generate the standard-format `.docx` into each folder.

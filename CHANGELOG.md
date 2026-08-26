@@ -4,6 +4,16 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/), and this project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [0.4.1] — 2026-08-26
+
+### Changed
+- **Each folder is now processed in its own subagent worker, in parallel** (the default, even for a
+  single folder). The worker opens and views that folder's images in its own context, so image
+  rendering no longer floods the main conversation — and folders run concurrently instead of one image
+  at a time, which is faster. The per-image `N of <total> images` counter now lives in the worker's
+  panel; the main thread shows `Writing <folder> manifest` / `Writing <project> manifest` and assembles
+  the deliverables + master index.
+
 ## [0.4.0] — 2026-08-26
 
 ### Added
