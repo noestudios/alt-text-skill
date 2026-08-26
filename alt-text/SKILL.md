@@ -1,7 +1,7 @@
 ---
 name: alt-text
 description: Generate accessible alt text for a directory of images (or a parent folder of project subfolders), for inclusion in a document. Classifies each image (decorative, informative, functional, complex, text-as-image), applies WCAG-aligned writing rules, rasterizes PDF/rendering figures so they can be described, and outputs a standard-format .docx per folder for layout hand-off — plus a master index spreadsheet across all folders by default, and optional thumbnails beside each entry. Use when the user asks for alt text, image descriptions, or accessibility text for images.
-argument-hint: [images-dir] [report-label] [document-path] [--thumbs] [--xlsx] [--no-index]
+argument-hint: [images-dir] [report-label] [document-path] [--thumbs] [--xlsx] [--no-index] [--verbose]
 arguments: [images_dir, report_label, document]
 disable-model-invocation: true
 allowed-tools: Read Glob Grep Bash Write
@@ -44,6 +44,8 @@ document path).
 - `--thumbs` — embed a thumbnail beside each entry in every `.docx` (needs Pillow). Default: off (text-only).
 - `--xlsx` — build the master index as `.xlsx` instead of the default `.csv` (needs openpyxl).
 - `--no-index` — skip the master index for this run.
+- `--verbose` — narrate every image as it's processed (file, category, the alt text written). Default:
+  off — show the concise progress meter instead (`N of <total> images`; `Writing <name> manifest`). See Step 3.
 
 **The master index is ON by default.** Unless `--no-index` is given, every run finishes by producing one
 overall index across all folders (Step 6) — `.csv` by default, `.xlsx` with `--xlsx`.
@@ -87,6 +89,18 @@ characteristics, and never guess a name. Deviate only if the user says so or a c
 ## Step 3: Classify, then write — one image at a time
 
 Process images individually. Do not batch multiple images into one Read — quality drops. View, then:
+
+**Progress output — default is a simple, minimal meter, not per-image narration.** Keep viewing **one
+image per Read** (that's about quality, not chatter), but by default do **not** write a paragraph about
+each image. Emit only these terse status lines as you go:
+
+- One short line per image, counting within the current folder: `N of <total> images` (e.g.
+  `1 of 23 images`, `2 of 23 images`, …), where `<total>` is that folder's image count.
+- `Writing <folder name> manifest` when you build that folder's `.docx` (Step 6).
+- `Writing <project name> manifest` when you build the master index (the `$report_label` / top-level project).
+
+Nothing else per image — the real detail lands once, in the Step 5 report. With **`--verbose`**, narrate
+each image as you classify it (file, category, and the alt text written) instead of the bare counter.
 
 **Classify first** into exactly one category:
 

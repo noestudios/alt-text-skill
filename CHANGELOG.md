@@ -4,6 +4,17 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/), and this project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [0.4.0] — 2026-08-26
+
+### Added
+- `--verbose` flag — full per-image narration (file, category, alt text) during a run.
+
+### Changed
+- **Default run output is now a simple, minimal progress meter** instead of narrating every image:
+  `N of <total> images` per image, `Writing <folder> manifest` per folder, and `Writing <project>
+  manifest` for the master index. Full per-image detail still lands in the Step 5 report; `--verbose`
+  restores the old narration.
+
 ## [0.3.0] — 2026-08-26
 
 ### Added
