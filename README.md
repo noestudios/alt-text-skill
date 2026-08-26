@@ -32,7 +32,8 @@ architectural drawings.
 ## Install (drop-in skill)
 
 ```bash
-git clone https://github.com/<you>/alt-text-skill.git
+git clone https://github.com/noestudios/alt-text-skill.git
+mkdir -p ~/.claude/skills
 cp -R alt-text-skill/alt-text ~/.claude/skills/
 ```
 
