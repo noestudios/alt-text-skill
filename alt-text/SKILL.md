@@ -26,7 +26,9 @@ invoked, ask the user for them in ONE brief, plain message (all at once — do n
 time), then proceed. Never guess a directory or invent a report name.
 
 - **`images_dir`** *(required)* — the folder of images to describe, or a parent folder whose
-  subfolders are separate projects. No directory means there is nothing to do: ask for the path.
+  subfolders are separate projects. No directory means there is nothing to do: ask for the path. If the
+  path **as given doesn't exist**, don't start — even when a similarly named folder exists elsewhere,
+  say what you found and get confirmation before running against it.
 - **`report_label`** *(required)* — the report/publication name; it becomes the `.docx` subtitle
   (e.g., "Acme 2025 Annual Report").
 - **`document`** *(optional)* — a source document to ground the descriptions in.
@@ -51,7 +53,7 @@ document path).
   off — show the concise progress meter instead (`N of <total> images`; `Writing <name> manifest`). See Step 3.
 
 **The master index is ON by default.** Unless `--no-index` is given, every run finishes by producing one
-overall index across all folders (Step 6) — `.csv` by default, `.xlsx` with `--xlsx`.
+overall index across all folders (Step 5) — `.csv` by default, `.xlsx` with `--xlsx`.
 
 ## Step 1: Resolve context (required before generating anything)
 
@@ -84,6 +86,8 @@ characteristics, and never guess a name. Deviate only if the user says so or a c
   the folders run concurrently rather than one image at a time (faster). This is the default even for a
   single folder. The main thread coordinates the workers, shows per-folder progress (Step 3), and
   afterward builds the `.docx` deliverables and the master index from the shared scratch manifests.
+- Note the wall-clock time when the run starts (`date +%s`) — the completion note (Step 6) reports
+  total elapsed time.
 - List image files (png, jpg, jpeg, gif, webp, svg) per folder. Report the count. If a single folder
   has more than 40, confirm before proceeding.
 - **PDF figures** (architectural renderings, site plans, floor plans) are in scope as report figures.
@@ -108,7 +112,7 @@ cleanly:
 - **In the main thread:** `Writing <folder> manifest` as each folder's `.docx` is built, and
   `Writing <project> manifest` when the master index is built. Nothing per image.
 
-The real detail lands once, in the Step 5 report.
+The detail lives in the deliverables themselves; the run ends with one short completion note (Step 6).
 
 **Classify first** into exactly one category:
 
@@ -140,8 +144,8 @@ The real detail lands once, in the Step 5 report.
 
 Write results incrementally to a Markdown manifest **in a scratch/temp directory, not the image
 folder** — this is crash-safety for a long run, and it feeds the `.docx` generator. The image folder
-receives only the `.docx` (Step 6). Name each scratch manifest `<folder> alt-text-manifest.md` and keep
-them all in one shared scratch dir, so the default master index (Step 6) finds every folder's manifest.
+receives only the `.docx` (Step 5). Name each scratch manifest `<folder> alt-text-manifest.md` and keep
+them all in one shared scratch dir, so the default master index (Step 5) finds every folder's manifest.
 
 Manifest format — this is authoritative; the generators parse exactly this shape, so there's no need to
 read the parser to confirm it:
@@ -169,26 +173,10 @@ reason a decorative image carries no information ("section-divider texture"), an
 noun or title block ("reads 'Sheet A2.1', not verified"), a context-file override, a rotated source, a
 duplicate/near-duplicate of another image, or a content-vs-folder mismatch (possible misfile).
 **Never** put manifest-internal navigation ("see long description below"); the generator strips it, but
-don't write it. Anything that applies to the whole set (e.g. "this folder is generic stock imagery")
-goes **once** into the Step 5 report, not onto every row.
+don't write it. Anything that applies to the whole set is not a per-row note — and it reaches the
+completion note (Step 6) only if it's a genuine problem; otherwise leave it out.
 
-## Step 5: Verification pass + operational flags
-
-Each worker re-views its own folder before returning: for every image, **could a screen-reader user
-reconstruct what matters, in this document?** Revise entries that fail, and pass back operational flags.
-
-The main thread then compiles one report to the user: total processed, count per category, and
-**operational issues that affect publication** — rotated source files, content that doesn't match its folder's theme (possible
-misfile), duplicate/near-duplicate images, mislabeled title blocks, and a heads-up on which images are
-generic/stock (whether those need alt text or `alt=""` depends on where they land in the layout — the
-publisher's call, not the manifest's).
-
-Finally, **offer the finishing options** the user didn't already settle with a flag: thumbnails
-embedded beside each entry (`--thumbs`) — if they say yes, regenerate the affected `.docx` with
-thumbnails; and note that the master index was included by default, offering `--xlsx` if they'd rather
-have a spreadsheet than the CSV (or `--no-index` if they don't want it at all).
-
-## Step 6: Produce the `.docx` deliverable (the only per-folder output in the folder)
+## Step 5: Produce the `.docx` deliverable (the only per-folder output in the folder)
 
 Convert each folder's scratch manifest into its `.docx`, written into the image folder, named with the
 **enclosing folder name prepended** so files stay unique when collected:
@@ -240,6 +228,20 @@ python scripts/manifest_to_index.py "<scratch dir of manifests>" \
 
 `.csv` needs nothing; `.xlsx` (frozen header + autofilter) needs `openpyxl`. If `--xlsx` is requested
 but openpyxl isn't installed, the script auto-writes `.csv` instead and says so.
+
+## Step 6: Done — one short completion note
+
+Finish with a brief note and stop:
+
+- where the deliverables are (the output directory),
+- how many images were written across how many deliverables (e.g. "14 images across 3 deliverables"),
+- any **errors or true exceptions** — a file that wouldn't open or rasterize, a generator warning, an
+  item skipped, a path that didn't match what the user gave. **Omit entirely when there are none.**
+- total run time (from the Step 2 start timestamp).
+
+Nothing else. No category breakdowns, no per-image recap, no list of observations, and **no offers of
+further options** — the flags are documented; the user will ask. Image-specific caveats already live in
+each entry's Note in the deliverable.
 
 ## Out of scope
 

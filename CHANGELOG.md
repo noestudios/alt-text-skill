@@ -4,6 +4,19 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/), and this project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [0.5.0] — 2026-08-26
+
+### Removed
+- **Step 5 verification pass** (re-viewing every image against its alt) — extra work for little gain.
+- **Operational-flags recap and finishing-options offer** at the end of a run. Image-specific caveats
+  live in each entry's Note; the flags are documented for the user to ask for.
+
+### Changed
+- **The run now ends with one short completion note**: output directory, images written across how many
+  deliverables, errors/exceptions only when there are any, and total run time. Nothing else.
+- **A nonexistent `images_dir` no longer auto-resolves** — if the path as given doesn't exist, the
+  skill says what it found (e.g. a similarly named folder elsewhere) and confirms before running.
+
 ## [0.4.1] — 2026-08-26
 
 ### Changed

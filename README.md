@@ -27,8 +27,8 @@ architectural drawings.
 - **Master index by default** — one spreadsheet accounting for every image across every folder
   (Folder / # / File / Category / Alt chars / Alt text / Long description / Notes). Produced as `.csv`
   on every run; pass `--xlsx` for an Excel file or `--no-index` to skip it.
-- **Flags publication issues** — rotated source files, likely misfiled images, duplicates, mislabeled
-  title blocks, and decorative-vs-informative calls for stock imagery.
+- **Quiet by default** — the run ends with one short completion note: output location, images written,
+  any errors, total time. Image-specific caveats live in each entry's Note field, not in chat.
 
 ## Install (drop-in skill)
 
@@ -98,8 +98,8 @@ The skill runs a fixed pipeline (full detail in [`alt-text/SKILL.md`](alt-text/S
 3. **Classify & write** — each folder in its own parallel worker (images stay out of the main chat),
    one image at a time per worker, WCAG rules per category.
 4. **Working manifest** — a scratch Markdown manifest (crash-safety; not a deliverable).
-5. **Verify & flag** — re-check each alt; surface publication issues.
-6. **Deliver** — generate the standard-format `.docx` into each folder.
+5. **Deliver** — generate the standard-format `.docx` into each folder, plus the master index.
+6. **Report** — one short completion note: location, counts, any errors, total time.
 
 See [`examples/`](examples/) for a sample manifest and the `.docx` it produces.
 
