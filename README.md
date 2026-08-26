@@ -31,11 +31,21 @@ architectural drawings.
 
 ## Install (drop-in skill)
 
+The skill is the whole `alt-text/` folder — `SKILL.md` **plus** its `scripts/`. Keep them together:
+the skill shells out to those scripts to build the `.docx`, so `SKILL.md` on its own won't work.
+
+**Git clone (recommended — brings the scripts):**
+
 ```bash
 git clone https://github.com/noestudios/alt-text-skill.git
 mkdir -p ~/.claude/skills
 cp -R alt-text-skill/alt-text ~/.claude/skills/
 ```
+
+**Claude desktop app:** installing by pointing the app at `SKILL.md` copies **only that file**, not the
+`scripts/` folder — the skill will then fail when it tries to run them. After installing, copy `scripts/`
+into the same skill directory so it sits next to `SKILL.md` (`…/skills/alt-text/scripts/`), or just use
+the git-clone method above, which brings everything.
 
 Then in Claude Code:
 
