@@ -69,12 +69,12 @@ its own `.docx`.
 | `--thumbs` | Embed a thumbnail beside each entry in the `.docx` (needs Pillow). |
 | `--xlsx` | Build the master index as `.xlsx` instead of the default `.csv` (needs openpyxl). |
 | `--no-index` | Skip the master index. |
-| `--verbose` | Full per-image narration. Default is a simple progress meter (`N of <total> images`). |
+| `--verbose` | Full per-image narration inside each worker (default: a terse `N of <total> images` counter). |
 
-The master index is generated **by default** — no flag needed. Runs show a simple, minimal progress
-meter as they go (`N of <total> images`, then `Writing <name> manifest`); pass `--verbose` for full
-per-image narration. You can also just ask in plain language ("include thumbnails", "skip the index",
-"be verbose").
+The master index is generated **by default** — no flag needed. Each folder runs in its own parallel
+worker, so the images stay out of the main chat; the main flow shows `Writing <folder> manifest`
+progress and ends with one short completion note. Pass `--verbose` for full per-image narration inside
+the workers. You can also just ask in plain language ("include thumbnails", "skip the index", "be verbose").
 
 ## Requirements
 

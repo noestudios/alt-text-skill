@@ -21,7 +21,9 @@ python3 -m venv .venv
 ## Testing a change
 
 - Run `alt-text/scripts/manifest_to_docx.py` against `examples/sample-manifest.md` and confirm the
-  generated `.docx` matches `examples/sample-output.docx` (open both, or diff the extracted text).
+  generated `.docx` matches `examples/sample-output.docx` (open both, or diff the extracted text). The
+  committed sample uses `--subtitle "Acme 2025 Annual Report"`; without it only the subtitle line
+  differs — compare the rest.
 - If you touch PDF handling, test `alt-text/scripts/pdf_to_pngs.sh` on a multi-page PDF with each
   backend you have installed.
 
