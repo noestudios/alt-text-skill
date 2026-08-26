@@ -22,6 +22,10 @@ architectural drawings.
   apparent race, gender, or age (configurable).
 - **Outputs one standard-format `.docx` per folder**, named with the folder prepended
   (`Riverside Library alt-text-manifest.docx`) so files stay unique when collected.
+- **Optional thumbnails** — lay out each entry as *thumbnail | description* (`--thumbs`), with
+  downscaled, EXIF-rotated previews (also works for rasterized PDF pages).
+- **Optional master index** — one spreadsheet (`.xlsx` or `.csv`) accounting for every image across
+  every folder: Folder / # / File / Category / Alt chars / Alt text / Long description / Notes.
 - **Flags publication issues** — rotated source files, likely misfiled images, duplicates, mislabeled
   title blocks, and decorative-vs-informative calls for stock imagery.
 
@@ -46,6 +50,8 @@ its own `.docx`.
 | For | Install |
 |---|---|
 | Building the `.docx` | `pip install python-docx` (see [`requirements.txt`](requirements.txt)) |
+| Thumbnails (`--thumbs`) | `pip install Pillow` |
+| Master index as `.xlsx` | `pip install openpyxl` (`.csv` needs nothing) |
 | Rasterizing PDFs (Linux/Windows) | poppler (`pdftoppm`) **or** ImageMagick (`magick`) |
 | Rasterizing PDFs (macOS) | nothing — uses built-in PDFKit |
 | Verifying `.docx` visually (optional) | LibreOffice **or** macOS QuickLook |
@@ -82,11 +88,13 @@ Each image becomes a block like:
 alt-text/            ← the drop-in skill (copy this into ~/.claude/skills/)
   SKILL.md
   scripts/
-    manifest_to_docx.py   ← Markdown manifest → standard .docx
+    manifest_common.py    ← shared manifest parser
+    manifest_to_docx.py   ← Markdown manifest → standard .docx (optional --thumbs)
+    manifest_to_index.py  ← all manifests → one master index (.xlsx/.csv)
     pdf_to_pngs.sh        ← cross-platform PDF page rasterizer
     pdf_to_pngs.js        ← macOS PDFKit fallback
     README.md
-examples/            ← sample manifest + generated .docx
+examples/            ← sample manifest, generated .docx, and master index .csv
 requirements.txt
 LICENSE              ← MIT
 ```

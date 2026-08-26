@@ -1,7 +1,7 @@
 # alt-text skill — helper scripts
 
-Two helpers the skill shells out to: one builds the `.docx` deliverable, one rasterizes PDF figures
-so they can be described.
+Small tools the skill shells out to. `manifest_common.py` holds the shared manifest parser used by
+the two generators.
 
 ## manifest_to_docx.py — build the `.docx` deliverable
 
@@ -10,7 +10,7 @@ Cross-platform; requires **python-docx**. One-time bootstrap (a venv keeps syste
 
 ```bash
 python3 -m venv .venv
-.venv/bin/pip install python-docx      # or: pip install -r ../../requirements.txt
+.venv/bin/pip install python-docx            # or: pip install -r ../../requirements.txt
 ```
 
 Usage:
@@ -30,13 +30,40 @@ Usage:
 - Per image it emits Category, Alt text, Long description (complex only), and a Note **only when the
   manifest row has real, non-boilerplate note text**.
 
+### `--thumbs` — a thumbnail beside each description (needs Pillow)
+
+```bash
+.venv/bin/pip install Pillow
+.venv/bin/python manifest_to_docx.py "/scratch/White Flint.md" \
+    --out "/path/White Flint/White Flint alt-text-manifest.docx" --subtitle "Acme 2025 Report" \
+    --thumbs --images-dir "/path/White Flint" --raster-dir "/scratch/white-flint-pdf-pages"
+```
+
+Each entry becomes a *thumbnail | description* row. Thumbnails are downscaled and EXIF-rotated.
+`--images-dir` defaults to the manifest's own folder; `--raster-dir` (for `X.pdf — pN` rows) defaults
+to `--images-dir`. `--thumb-width` sets the width in inches (default 1.6). Rows whose image can't be
+found are reported and fall back to text-only.
+
+## manifest_to_index.py — master index spreadsheet (all folders)
+
+Aggregates every `*alt-text-manifest.md` under a tree into one spreadsheet, one row per image:
+Folder / # / File / Category / Alt chars / Alt text / Long description / Notes.
+
+```bash
+# .xlsx (frozen header + autofilter) — needs openpyxl
+.venv/bin/pip install openpyxl
+.venv/bin/python manifest_to_index.py "/path/photos" --out "/path/photos/alt-text-index.xlsx"
+
+# .csv — no dependencies
+.venv/bin/python manifest_to_index.py "/path/photos" --out "/path/photos/alt-text-index.csv"
+```
+
+With no `--out`, it writes `alt-text-index.xlsx` when openpyxl is present, otherwise `.csv`.
+
 ## pdf_to_pngs.sh — rasterize PDF figures (cross-platform)
 
-Renders **every page** of a PDF to PNGs. Picks the first backend available:
-
-1. `pdftoppm` (poppler) — best quality, honors the target width
-2. `magick` / `convert` (ImageMagick)
-3. `osascript pdf_to_pngs.js` (native macOS PDFKit — no extra install)
+Renders **every page** of a PDF to PNGs, picking the first backend available: `pdftoppm` (poppler) →
+`magick`/`convert` (ImageMagick) → `pdf_to_pngs.js` (native macOS PDFKit; no install).
 
 ```bash
 bash pdf_to_pngs.sh "<file.pdf>" "<outDir>" 2000
@@ -45,14 +72,14 @@ bash pdf_to_pngs.sh "<file.pdf>" "<outDir>" 2000
 
 Why a dedicated tool: `sips` and `qlmanage` only rasterize **page 1** of a multi-page PDF.
 
-`pdf_to_pngs.js` is the macOS-only PDFKit fallback invoked by the shell script; you can also call it
-directly with `osascript -l JavaScript pdf_to_pngs.js <pdf> <outDir> <widthPx>`.
-
 ## Dependencies at a glance
 
 | Need | Tool | Install |
 |---|---|---|
 | Build `.docx` | python-docx | `pip install python-docx` |
-| Rasterize PDF (any OS) | poppler **or** ImageMagick | `brew install poppler` / `apt install poppler-utils` / `brew install imagemagick` |
-| Rasterize PDF (macOS, no install) | built-in PDFKit | — |
-| Verify `.docx` visually (optional) | LibreOffice **or** macOS QuickLook | `brew install --cask libreoffice` |
+| Thumbnails (`--thumbs`) | Pillow | `pip install Pillow` |
+| Master index `.xlsx` | openpyxl | `pip install openpyxl` |
+| Master index `.csv` | — (stdlib) | — |
+| Rasterize PDF (Linux/Win) | poppler **or** ImageMagick | `apt install poppler-utils` / `brew install imagemagick` |
+| Rasterize PDF (macOS) | built-in PDFKit | — |
+| Verify `.docx` visually | LibreOffice **or** macOS QuickLook | `brew install --cask libreoffice` |

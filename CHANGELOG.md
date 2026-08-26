@@ -4,6 +4,22 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/), and this project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [0.2.0] — 2026-08-26
+
+### Added
+- **Master index spreadsheet** — `scripts/manifest_to_index.py` aggregates every manifest under a
+  tree into one row-per-image `.xlsx` (frozen header + autofilter, via openpyxl) or `.csv`
+  (dependency-free). Columns: Folder / # / File / Category / Alt chars / Alt text / Long description /
+  Notes.
+- **Thumbnails** — `manifest_to_docx.py --thumbs` lays out each entry as *thumbnail | description*,
+  with downscaled, EXIF-rotated previews (Pillow). Resolves both plain image files and `X.pdf — pN`
+  rasterized pages (`--images-dir` / `--raster-dir` / `--thumb-width`).
+- `scripts/manifest_common.py` — shared manifest parser used by both generators.
+- Example master index (`examples/sample-index.csv`).
+
+### Changed
+- Refactored the manifest parser out of `manifest_to_docx.py` into `manifest_common.py`.
+
 ## [0.1.0] — 2026-08-26
 
 Initial open-source release.

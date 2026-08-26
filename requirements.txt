@@ -1,1 +1,6 @@
+# Core — required to build the .docx deliverable
 python-docx>=1.1
+
+# Optional — install as needed:
+#   Pillow>=10.0      # --thumbs (embed a thumbnail beside each entry)
+#   openpyxl>=3.1     # master index as .xlsx (CSV works without it)

@@ -1,6 +1,6 @@
 ---
 name: alt-text
-description: Generate accessible alt text for a directory of images (or a parent folder of project subfolders), for inclusion in a document. Classifies each image (decorative, informative, functional, complex, text-as-image), applies WCAG-aligned writing rules, rasterizes PDF/rendering figures so they can be described, and outputs a standard-format .docx per folder for layout hand-off. Use when the user asks for alt text, image descriptions, or accessibility text for images.
+description: Generate accessible alt text for a directory of images (or a parent folder of project subfolders), for inclusion in a document. Classifies each image (decorative, informative, functional, complex, text-as-image), applies WCAG-aligned writing rules, rasterizes PDF/rendering figures so they can be described, and outputs a standard-format .docx per folder for layout hand-off — optionally with a thumbnail beside each entry and a master index spreadsheet across all folders. Use when the user asks for alt text, image descriptions, or accessibility text for images.
 argument-hint: [images-dir] [report-label] [document-path]
 arguments: [images_dir, report_label, document]
 disable-model-invocation: true
@@ -138,6 +138,33 @@ text**, **Long description** (complex only), and **Note** (only when the row has
 a `.md` in the deliverable folder. Verify a sample by rendering it (LibreOffice:
 `soffice --headless --convert-to pdf "<file.docx>"`, or macOS `qlmanage -t -s 1500 -o <dir>
 "<file.docx>"`) and reading the result.
+
+### Optional: thumbnails beside each entry
+
+If the user wants a visual reference, add `--thumbs` so each entry is laid out as *thumbnail |
+description*. Point the generator at the images (and, for PDF-page rows, the rasterized pages):
+
+```bash
+python scripts/manifest_to_docx.py "<scratch manifest.md>" \
+    --out "<imageFolder>/<folder name> alt-text-manifest.docx" \
+    --subtitle "$report_label" \
+    --thumbs --images-dir "<imageFolder>" --raster-dir "<scratchDir with rasterized PDF pages>"
+```
+
+Thumbnails are downscaled and EXIF-rotated (needs Pillow: `.venv/bin/pip install Pillow`). Rows whose
+image can't be found are reported and fall back to text-only.
+
+### Optional: master index spreadsheet (all folders)
+
+If the user wants a single accounting of every image, run the index over the directory holding all the
+(scratch) manifests — one row per image, columns Folder / # / File / Category / Alt chars / Alt text /
+Long description / Notes:
+
+```bash
+python scripts/manifest_to_index.py "<dir of manifests>" --out "<dest>/alt-text-index.xlsx"
+```
+
+`.xlsx` (frozen header + autofilter) needs `openpyxl`; a `.csv` extension needs nothing.
 
 ## Out of scope
 
