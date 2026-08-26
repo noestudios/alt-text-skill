@@ -14,7 +14,10 @@ deliver the results as a standard-format **`.docx`** per folder that a designer 
 InDesign (or similar). The Markdown manifest is an internal working file only — see Step 4.
 
 Bundled helpers live in `scripts/` (see `scripts/README.md`): `manifest_to_docx.py` builds the
-`.docx`; `pdf_to_pngs.sh` rasterizes PDF pages so they can be viewed and described.
+`.docx`; `pdf_to_pngs.sh` rasterizes PDF pages so they can be viewed and described. These helpers are
+deterministic and already tested — **trust them.** Rely on the `OK …` line each prints (and any warning
+it flags); don't read their source to confirm behavior, and don't re-open, render, or introspect their
+output to re-verify it on a normal run.
 
 ## Required inputs — confirm before doing anything
 
@@ -135,7 +138,8 @@ folder** — this is crash-safety for a long run, and it feeds the `.docx` gener
 receives only the `.docx` (Step 6). Name each scratch manifest `<folder> alt-text-manifest.md` and keep
 them all in one shared scratch dir, so the default master index (Step 6) finds every folder's manifest.
 
-Manifest format:
+Manifest format — this is authoritative; the generators parse exactly this shape, so there's no need to
+read the parser to confirm it:
 
 ```markdown
 # Alt Text Manifest — <Project / folder name>
@@ -187,9 +191,11 @@ python scripts/manifest_to_docx.py "<scratch manifest.md>" \
 
 The `.docx` uses a standard per-image format — heading `Image N. <file>`, then **Category**, **Alt
 text**, **Long description** (complex only), and **Note** (only when the row has one). Do **not** leave
-a `.md` in the deliverable folder. Verify a sample by rendering it (LibreOffice:
-`soffice --headless --convert-to pdf "<file.docx>"`, or macOS `qlmanage -t -s 1500 -o <dir>
-"<file.docx>"`) and reading the result.
+a `.md` in the deliverable folder. The generator prints `OK  rows=N …` and flags any orphaned
+long-descriptions or missing thumbnails — that line is your confirmation. **Don't render or introspect
+the `.docx` to re-verify it**; investigate only when the generator prints a warning. (Rendering a sample
+to eyeball layout — LibreOffice `soffice --headless --convert-to pdf`, or macOS `qlmanage` — is a
+one-off development check, not something to do on every run.)
 
 ### Thumbnails beside each entry (`--thumbs`)
 

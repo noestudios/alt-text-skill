@@ -14,6 +14,11 @@ All notable changes to this project are documented here. The format is based on
   `N of <total> images` per image, `Writing <folder> manifest` per folder, and `Writing <project>
   manifest` for the master index. Full per-image detail still lands in the Step 5 report; `--verbose`
   restores the old narration.
+- **No per-run self-testing of the tooling** — the helper scripts are deterministic and tested, so the
+  skill trusts their `OK …` output instead of reading the parser to confirm the manifest format or
+  re-opening/rendering/introspecting the `.docx` to re-verify a build. It investigates only when a
+  script flags a warning (orphaned long-description, missing thumbnail). The image-quality re-view in
+  Step 5 is unchanged.
 
 ## [0.3.0] — 2026-08-26
 
